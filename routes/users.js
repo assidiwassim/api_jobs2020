@@ -12,9 +12,9 @@ router.post('/register', function(req, res, next) {
 
     const userData = {
       name: req.body.name,
-      skills: req.body.skills,
-      category: req.body.category,
+      role: req.body.role,
       email: req.body.email,
+      profile: JSON.stringify(req.body.profile),
       password: req.body.password,
     }
 
@@ -26,7 +26,7 @@ router.post('/register', function(req, res, next) {
                   if(result[0].nbr==0){
                     bcrypt.hash(userData.password, 10, (err, hash_password) => {
                       userData.password=hash_password
-                      var sql = "INSERT INTO users (name, skills,category,email,password) VALUES ('"+userData.name+"', '"+userData.skills+"','"+userData.category+"','"+userData.email+"','"+userData.password+"')";
+                      var sql = "INSERT INTO users (name, role,email,profile,password) VALUES ('"+userData.name+"', '"+userData.role+"','"+userData.email+"','"+userData.profile+"','"+userData.password+"')";
                       con.query(sql, function (err, result) {
                         if (err) throw err;
                         res.json({ message: 'User registered successfully !' })
@@ -48,25 +48,31 @@ router.post('/login', function(req, res, next) {
 
   mysql_config.getConnection(function (err, con) {
       if (err) throw err;
-      var sql = "SELECT email,password  FROM users WHERE email = '"+userData.email+"'"
+      var sql = "SELECT *  FROM users WHERE email = '"+userData.email+"'"
         con.query(sql, function (err, result) {
                 if (err) throw err;
 
                 if (result.length>0 && bcrypt.compareSync(userData.password, result[0].password)) {
 
-                      payload = {
-                        id: result[0].id,
-                        email: result[0].email
-                      }
+                    payload = {
+                      id: result[0].id,
+                      name: result[0].name,
+                      role: result[0].role,
+                      email: result[0].email,
+                      profile: result[0].profile,
+                    }
 
                     let token = jwt.sign(payload, process.env.SECRET_KEY)
 
-                      payload = {
-                        id: result[0].id,
-                        email: result[0].email,
-                        token : token
-                      }
-
+                    payload = {
+                      id: result[0].id,
+                      name: result[0].name,
+                      role: result[0].role,
+                      email: result[0].email,
+                      profile: JSON.parse(result[0].profile),
+                      token : token
+                    }
+                  
                       res.json({ message: 'User connected successfully ! ',payload:payload })
 
                 }else{
