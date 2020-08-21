@@ -69,7 +69,7 @@ router.post('/login', function(req, res, next) {
                       name: result[0].name,
                       role: result[0].role,
                       email: result[0].email,
-                      profile: JSON.parse(result[0].profile),
+                      profile: result[0].profile,
                       token : token
                     }
                   
