@@ -35,10 +35,10 @@ router.get('/all', function(req, res, next) {
 
   if(keyword){
     console.log(keyword)
-    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where jobtitle LIKE '"+keyword+"%' or description LIKE '"+keyword+"%'  ";
+    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where jobtitle LIKE '"+keyword+"%' or description LIKE '"+keyword+"%' ORDER BY date DESC ";
   }else{
     console.log("no keyword")
-    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id ";
+    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id ORDER BY date DESC";
   }
 
   if(user_profile){
@@ -50,10 +50,8 @@ router.get('/all', function(req, res, next) {
     var skills = profile.skills;
     var skills_to_sql =skills.join("|");
 
-    console.log(category)
-    console.log(skills_to_sql)
 
-    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or tags RLIKE '"+skills_to_sql+"' ";
+    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or tags RLIKE '"+skills_to_sql+"' ORDER BY date DESC";
     
   }
 
