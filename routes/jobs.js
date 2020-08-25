@@ -35,25 +35,33 @@ router.get('/all', function(req, res, next) {
 
   if(keyword){
     console.log(keyword)
-    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where jobtitle LIKE '"+keyword+"%' or description LIKE '"+keyword+"%' ORDER BY date DESC ";
+    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where jobtitle LIKE '%"+keyword+"%' or description LIKE '%"+keyword+"%' ORDER BY date DESC ";
+  }else if(user_profile){
+  
+    console.log(user_profile)
+    /*  standardidation : user_profile={"category":"dev web","skills":["nodejs","python","java"],"history":["css","js","wordpress"]} */
+
+    var profile = JSON.parse(user_profile)
+    var category = profile.category; // obligatoire
+    var skills = profile.skills; // au min 1 skills
+    var skills_to_sql =skills.join("|");  // "nodejs|python|java"
+
+    var history = profile.history;  
+    var history_to_sql =history.join("|");  // "nodejs|python|java"
+
+    if(history){
+      sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or tags RLIKE '"+skills_to_sql+"' or tags RLIKE '"+history_to_sql+"' ORDER BY date DESC";
+    }else{
+      sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or tags RLIKE '"+skills_to_sql+"' ORDER BY date DESC";
+    }
+
+    
   }else{
     console.log("no keyword")
     sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id ORDER BY date DESC";
   }
 
-  if(user_profile){
   
-    /*  standardidation : user_profile={"category":"dev web","skills":["nodejs","python","java"]} */
-
-    var profile = JSON.parse(user_profile)
-    var category = profile.category;
-    var skills = profile.skills;
-    var skills_to_sql =skills.join("|");
-
-
-    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or tags RLIKE '"+skills_to_sql+"' ORDER BY date DESC";
-    
-  }
 
   mysql_config.getConnection(function (err, con) {
       if (err) throw err;

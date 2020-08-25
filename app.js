@@ -25,8 +25,8 @@ var usersRouter = require('./routes/users');
 var jobsRouter = require('./routes/jobs');
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/jobs', jobsRouter);
+app.use('/users', usersRouter); //=> /users/register    /users/login
+app.use('/jobs', jobsRouter); //=> /jobs/all       /jobs/add   /jobs/find/:id
 
 var port = process.env.PORT || 3000
 app.listen(port, () => {
