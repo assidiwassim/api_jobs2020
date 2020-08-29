@@ -9,12 +9,20 @@ var mysql_config = require('../config/config.js');
 
 
 router.post('/register', function(req, res, next) {
+ 
+  var profile=null
 
+  if(req.body.role=="developer"){
+    profile={
+      skills:req.body.skills,
+      category: req.body.category
+    }
+  }
     const userData = {
       name: req.body.name,
       role: req.body.role,
       email: req.body.email,
-      profile: JSON.stringify(req.body.profile),
+      profile: JSON.stringify(profile),
       password: req.body.password,
     }
 
@@ -73,7 +81,7 @@ router.post('/login', function(req, res, next) {
                       token : token
                     }
                   
-                      res.json({ message: 'User connected successfully ! ',payload:payload })
+                      res.json(payload)
 
                 }else{
                   res.json({ message: 'Incorrect login or password !' })

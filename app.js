@@ -1,10 +1,13 @@
 
 var express = require('express');
 var app = express();
-
+var cors = require('cors');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(cors({
+  origin: '*'
+}));
 
 var mysql_config = require('./config/config.js');
 mysql_config.getConnection(function (err, con) {
