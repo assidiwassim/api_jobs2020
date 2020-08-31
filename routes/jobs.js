@@ -33,12 +33,12 @@ router.get('/all', function(req, res, next) {
   var keyword =  req.query.keyword;
   var user_profile =  req.query.user_profile;
 
-  if(keyword){
-    console.log(keyword)
+  if(keyword && keyword!=null){
+    console.log("keyword")
     sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where jobtitle LIKE '%"+keyword+"%' or description LIKE '%"+keyword+"%' ORDER BY date DESC ";
-  }else if(user_profile){
+  }else if(user_profile && user_profile!=null){
   
-    console.log(user_profile)
+    console.log("user_profile")
     /*  standardidation : user_profile={"category":"dev web","skills":["nodejs","python","java"],"history":["css","js","wordpress"]} */
 
     var profile = JSON.parse(user_profile)
@@ -67,8 +67,6 @@ router.get('/all', function(req, res, next) {
       if (err) throw err;
       con.query(sql, function (err, result) {
         if (err) throw err;
-        console.log(err)
-        console.log(result)
         res.json({ data:result })
       });
   });
