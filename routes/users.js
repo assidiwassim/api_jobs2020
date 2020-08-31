@@ -27,6 +27,7 @@ router.post('/register', function(req, res, next) {
     }
 
     mysql_config.getConnection(function (err, con) {
+      con.release();
         if (err) throw err;
         var sql = "SELECT count(*) as nbr FROM users WHERE email = '"+userData.email+"'"
           con.query(sql, function (err, result) {
@@ -55,13 +56,21 @@ router.post('/login', function(req, res, next) {
   }
 
   mysql_config.getConnection(function (err, con) {
-      if (err) throw err;
+    con.release();
+      if (err){
+        console.log("err1")
+        throw err;
+      } 
+
       var sql = "SELECT *  FROM users WHERE email = '"+userData.email+"'"
         con.query(sql, function (err, result) {
-                if (err) throw err;
-
+          
+               if (err){
+                  throw err;
+                } 
+               
                 if (result.length>0 && bcrypt.compareSync(userData.password, result[0].password)) {
-
+                 
                     payload = {
                       id: result[0].id,
                       name: result[0].name,
@@ -69,9 +78,9 @@ router.post('/login', function(req, res, next) {
                       email: result[0].email,
                       profile: result[0].profile,
                     }
-
+                 
                     let token = jwt.sign(payload, process.env.SECRET_KEY)
-
+                 
                     payload = {
                       id: result[0].id,
                       name: result[0].name,
@@ -80,15 +89,17 @@ router.post('/login', function(req, res, next) {
                       profile: result[0].profile,
                       token : token
                     }
-                  
+                 
                       res.json(payload)
-
+                     
                 }else{
                   res.json({ message: 'Incorrect login or password !' })
                 }
                       
         });
   });
+
+  
 });
 
 module.exports = router;

@@ -18,6 +18,7 @@ router.post('/add', function(req, res, next) {
   }
 
   mysql_config.getConnection(function (err, con) {
+    con.release();
       if (err) throw err;
       var sql = "INSERT INTO jobs (jobtitle, category,tags,job_type,condidate_region,price,description,company_id,date) VALUES ('"+jobData.jobtitle+"', '"+jobData.category+"','"+jobData.tags+"','"+jobData.job_type+"','"+jobData.condidate_region+"','"+jobData.price+"','"+jobData.description+"',"+jobData.company_id+",'"+jobData.date+"')";
       con.query(sql, function (err, result) {
@@ -64,6 +65,7 @@ router.get('/all', function(req, res, next) {
   
 
   mysql_config.getConnection(function (err, con) {
+    con.release();
       if (err) throw err;
       con.query(sql, function (err, result) {
         if (err) throw err;
@@ -78,6 +80,7 @@ router.get('/find/:id', function(req, res, next) {
   var id = req.params.id; 
 
   mysql_config.getConnection(function (err, con) {
+    con.release();
       if (err) throw err;
       var sql = "SELECT *  FROM jobs  INNER JOIN users ON users.id = jobs.company_id   where jobs.id = "+id+"";
       con.query(sql, function (err, result) {

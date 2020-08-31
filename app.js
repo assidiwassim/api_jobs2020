@@ -11,6 +11,7 @@ app.use(cors({
 
 var mysql_config = require('./config/config.js');
 mysql_config.getConnection(function (err, con) {
+  con.release();
     if (err) throw err;
     console.log("Database Connected! ")
 
