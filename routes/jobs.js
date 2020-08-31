@@ -2,17 +2,19 @@ var express = require('express');
 var router = express.Router();
 var mysql_config = require('../config/config.js');
 
-
 router.post('/add', function(req, res, next) {
 
+ 
   const jobData = {
     jobtitle: req.body.jobtitle,
     category: req.body.category,
-    tags: JSON.stringify(req.body.tags),
+    skills: JSON.stringify(req.body.skills),
     job_type: req.body.job_type,
     condidate_region: req.body.condidate_region,
     price: req.body.price,
-    description: req.body.description,
+    company_url:req.body.company_url,
+    snippet:req.body.snippet,
+    description:req.body.description,
     company_id:  parseInt(req.body.company_id),
     date : new Date().toISOString().slice(0, 19).replace('T', ' ')
   }
@@ -20,7 +22,7 @@ router.post('/add', function(req, res, next) {
   mysql_config.getConnection(function (err, con) {
     con.release();
       if (err) throw err;
-      var sql = "INSERT INTO jobs (jobtitle, category,tags,job_type,condidate_region,price,description,company_id,date) VALUES ('"+jobData.jobtitle+"', '"+jobData.category+"','"+jobData.tags+"','"+jobData.job_type+"','"+jobData.condidate_region+"','"+jobData.price+"','"+jobData.description+"',"+jobData.company_id+",'"+jobData.date+"')";
+      var sql = "INSERT INTO jobs (jobtitle, category,skills,job_type,condidate_region,price,company_url,snippet,description,company_id,date) VALUES ('"+jobData.jobtitle+"', '"+jobData.category+"','"+jobData.skills+"','"+jobData.job_type+"','"+jobData.condidate_region+"','"+jobData.price+"','"+jobData.company_url+"','"+jobData.snippet+"',"+con.escape(jobData.description)+","+jobData.company_id+",'"+jobData.date+"')";
       con.query(sql, function (err, result) {
         if (err) throw err;
         res.json({ message: 'job save successfully !' })
@@ -51,9 +53,9 @@ router.get('/all', function(req, res, next) {
     var history_to_sql =history.join("|");  // "nodejs|python|java"
 
     if(history){
-      sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or tags RLIKE '"+skills_to_sql+"' or tags RLIKE '"+history_to_sql+"' ORDER BY date DESC";
+      sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or skills RLIKE '"+skills_to_sql+"' or skills RLIKE '"+history_to_sql+"' ORDER BY date DESC";
     }else{
-      sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or tags RLIKE '"+skills_to_sql+"' ORDER BY date DESC";
+      sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or skills RLIKE '"+skills_to_sql+"' ORDER BY date DESC";
     }
 
     
