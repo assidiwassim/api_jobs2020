@@ -17,15 +17,20 @@ router.post('/register', function(req, res, next) {
       skills:req.body.skills,
       category: req.body.category
     }
+    profile = JSON.stringify(profile)
+  }else if(req.body.role=="company"){
+    profile=req.body.logo
   }
     const userData = {
       name: req.body.name,
       role: req.body.role,
       email: req.body.email,
-      profile: JSON.stringify(profile),
+      profile: profile,
       password: req.body.password,
     }
 
+    console.log(userData)
+    
     mysql_config.getConnection(function (err, con) {
       con.release();
         if (err) throw err;

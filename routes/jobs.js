@@ -38,7 +38,7 @@ router.get('/all', function(req, res, next) {
 
   if(keyword && keyword!=null){
     console.log("keyword")
-    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where jobtitle LIKE '%"+keyword+"%' or description LIKE '%"+keyword+"%' ORDER BY date DESC ";
+    sql = "SELECT *,jobs.id as _id   FROM jobs INNER JOIN users ON users.id = jobs.company_id where jobtitle LIKE '%"+keyword+"%' or description LIKE '%"+keyword+"%' ORDER BY date DESC ";
   }else if(user_profile && user_profile!=null){
   
     console.log("user_profile")
@@ -53,15 +53,15 @@ router.get('/all', function(req, res, next) {
     var history_to_sql =history.join("|");  // "nodejs|python|java"
 
     if(history){
-      sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or skills RLIKE '"+skills_to_sql+"' or skills RLIKE '"+history_to_sql+"' ORDER BY date DESC";
+      sql = "SELECT *,jobs.id as _id   FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or skills RLIKE '"+skills_to_sql+"' or skills RLIKE '"+history_to_sql+"' ORDER BY date DESC";
     }else{
-      sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or skills RLIKE '"+skills_to_sql+"' ORDER BY date DESC";
+      sql = "SELECT *,jobs.id as _id   FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or skills RLIKE '"+skills_to_sql+"' ORDER BY date DESC";
     }
 
     
   }else{
     console.log("no keyword")
-    sql = "SELECT *  FROM jobs INNER JOIN users ON users.id = jobs.company_id ORDER BY date DESC";
+    sql = "SELECT *,jobs.id as _id  FROM jobs INNER JOIN users ON users.id = jobs.company_id ORDER BY date DESC";
   }
 
   
@@ -84,10 +84,10 @@ router.get('/find/:id', function(req, res, next) {
   mysql_config.getConnection(function (err, con) {
     con.release();
       if (err) throw err;
-      var sql = "SELECT *  FROM jobs  INNER JOIN users ON users.id = jobs.company_id   where jobs.id = "+id+"";
+      var sql = "SELECT *,jobs.id as _id   FROM jobs  INNER JOIN users ON users.id = jobs.company_id   where jobs.id = "+id+"";
       con.query(sql, function (err, result) {
         if (err) throw err;
-        res.json({ data:result[0] })
+        res.json(result[0])
       });
   });
 });
