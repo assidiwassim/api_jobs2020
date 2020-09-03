@@ -36,18 +36,16 @@ router.get('/all', function(req, res, next) {
   var user_profile =  req.query.user_profile;
 
   if(keyword && keyword!=null){
-    console.log("keyword")
     sql = "SELECT *,jobs.id as _id   FROM jobs INNER JOIN users ON users.id = jobs.company_id where jobtitle LIKE '%"+keyword+"%' or description LIKE '%"+keyword+"%' ORDER BY date DESC ";
   }else if(user_profile && user_profile!=null){
-  
-    console.log("user_profile")
-    /*  standardidation : user_profile={"category":"dev web","skills":["nodejs","python","java"],"history":["css","js","wordpress"]} */
+
+    /*  standardidation : user_profile={"category":"dev web","skills":["nodejs","python","java"],"history":["css","js","wordpress"],"notif":["css","js","wordpress"]} */
 
     var profile = JSON.parse(user_profile)
-    console.log(profile)
-    var category = profile.category; // obligatoire
-    var skills = profile.skills; // au min 1 skills
-    var skills_to_sql =skills.join("|");  // "nodejs|python|java"
+  
+    var category = profile.category;
+    var skills = profile.skills; 
+    var skills_to_sql =skills.join("|");  
 
     var history = profile.history;  
  
@@ -63,7 +61,7 @@ router.get('/all', function(req, res, next) {
 
     
   }else{
-    console.log("no keyword")
+   
     sql = "SELECT *,jobs.id as _id  FROM jobs INNER JOIN users ON users.id = jobs.company_id ORDER BY date DESC";
   }
 
@@ -172,7 +170,6 @@ router.put('/find_user_and_update_notif/:id', function(req, res, next) {
   mysql_config.getConnection(function (err, con) {
     con.release();
       if (err){
-        console.log("err1")
         throw err;
       } 
 
