@@ -4,7 +4,6 @@ var mysql_config = require('../config/config.js');
 
 router.post('/add', function(req, res, next) {
 
- 
   const jobData = {
     jobtitle: req.body.jobtitle,
     category: req.body.category,
@@ -45,14 +44,18 @@ router.get('/all', function(req, res, next) {
     /*  standardidation : user_profile={"category":"dev web","skills":["nodejs","python","java"],"history":["css","js","wordpress"]} */
 
     var profile = JSON.parse(user_profile)
+    console.log(profile)
     var category = profile.category; // obligatoire
     var skills = profile.skills; // au min 1 skills
     var skills_to_sql =skills.join("|");  // "nodejs|python|java"
 
     var history = profile.history;  
-    var history_to_sql =history.join("|");  // "nodejs|python|java"
+ 
 
-    if(history){
+    if(history && history.length>1){
+      
+      var history_to_sql =history.join("|");  // "nodejs|python|java"
+
       sql = "SELECT *,jobs.id as _id   FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or skills RLIKE '"+skills_to_sql+"' or skills RLIKE '"+history_to_sql+"' ORDER BY date DESC";
     }else{
       sql = "SELECT *,jobs.id as _id   FROM jobs INNER JOIN users ON users.id = jobs.company_id where category LIKE '"+category+"' or jobtitle RLIKE '"+skills_to_sql+"' or description RLIKE '"+skills_to_sql+"' or skills RLIKE '"+skills_to_sql+"' ORDER BY date DESC";
@@ -91,5 +94,142 @@ router.get('/find/:id', function(req, res, next) {
       });
   });
 });
+
+
+router.put('/find_user_and_update_history/:id', function(req, res, next) {
+ 
+  var id = req.params.id; 
+  var keyword = req.body.keyword
+
+
+  mysql_config.getConnection(function (err, con) {
+    con.release();
+      if (err){
+        console.log("err1")
+        throw err;
+      } 
+
+      var sql = "SELECT *  FROM users WHERE id = "+id+""
+        con.query(sql, function (err, result) {
+          
+               if (err){
+                  throw err;
+                } 
+               
+                if (result.length>0) {
+                 
+                   
+                      profile=JSON.parse(result[0].profile)
+                    
+                      var history = profile.history
+
+                      if(history && history.length>0){
+                        
+                        if(history.indexOf(keyword)<0 ){
+                          history.push(keyword)
+                        }
+                        
+                      }else{
+
+                        history=[]
+
+                        if(history.indexOf(keyword)<0 ){
+                          history.push(keyword)
+                        }
+                        
+                      }
+
+ 
+                      profile.history = history
+
+                      var sql = "UPDATE  users  SET profile = '"+JSON.stringify(profile)+ "' WHERE id = "+id+""
+                      con.query(sql, function (err, result) {
+                             if (err){throw err;}
+                              
+                             res.json({ message: 'profile updated successfully  !' })
+                            })
+                     
+                     
+                }else{
+                  res.json({ message: 'err' })
+                }
+                      
+        });
+  });
+
+
+
+})
+
+
+
+router.put('/find_user_and_update_notif/:id', function(req, res, next) {
+ 
+  var id = req.params.id; 
+  var keyword = req.body.keyword
+  
+
+  mysql_config.getConnection(function (err, con) {
+    con.release();
+      if (err){
+        console.log("err1")
+        throw err;
+      } 
+
+      var sql = "SELECT *  FROM users WHERE id = "+id+""
+        con.query(sql, function (err, result) {
+          
+               if (err){
+                  throw err;
+                } 
+               
+                if (result.length>0) {
+                 
+                   
+                      profile=JSON.parse(result[0].profile)
+                    
+                      var notif = profile.notif
+
+                      if(notif && notif.length>0){
+                        
+                        if(notif.indexOf(keyword)<0 ){
+                          notif.push(keyword)
+                        }
+                        
+                      }else{
+
+                        notif=[]
+
+                        if(notif.indexOf(keyword)<0 ){
+                          notif.push(keyword)
+                        }
+                        
+                      }
+
+ 
+                      profile.notif = notif
+
+                      var sql = "UPDATE  users  SET profile = '"+JSON.stringify(profile)+ "' WHERE id = "+id+""
+                      con.query(sql, function (err, result) {
+                             if (err){throw err;}
+                              
+                             res.json({ message: 'profile updated successfully  !' })
+                            })
+                     
+                     
+                }else{
+                  res.json({ message: 'err' })
+                }
+                      
+        });
+  });
+
+
+
+})
+
+
+
+
 
 module.exports = router;

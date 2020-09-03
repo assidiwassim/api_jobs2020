@@ -15,7 +15,9 @@ router.post('/register', function(req, res, next) {
   if(req.body.role=="developer"){
     profile={
       skills:req.body.skills,
-      category: req.body.category
+      category: req.body.category,
+      history:[],
+      notif:[]
     }
     profile = JSON.stringify(profile)
   }else if(req.body.role=="company"){
